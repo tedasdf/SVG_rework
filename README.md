@@ -16,6 +16,12 @@
 </div>
 
 ---
+## 🔥 News
+
+- [2025.11.20] Released pretrained weights for both the SVG Autoencoder and the SVG-XL diffusion backbone.
+
+- [2025.09.12] Released the paper, along with full training and inference code.
+
 
 ## 🧠 Overview
 
@@ -30,6 +36,7 @@ We introduce **SVG**, a novel latent diffusion model without variational autoenc
 - ✅ PyTorch implementation of **Latent Diffusion Transformer**
 - ✅ End-to-end **training** and **sampling** scripts
 - ✅ Multi-GPU distributed training support
+- ✅ Pretrained-weights of **SVG Autoencoder and SVG-XL**
 
 ---
 
@@ -59,6 +66,8 @@ Follow the official DINOv3 repository instructions to download pre-trained check
 ### 2. Prepare Dataset
 - Download **ImageNet-1k**
 - Update dataset paths in the configuration files
+
+
 
 ---
 
@@ -109,6 +118,21 @@ bash run_train.sh configs/example_svg_autoencoder_vitsp.yaml
 ```bash
 torchrun --nnodes=1 --nproc_per_node=8 train_svg.py --config ./configs/example_SVG_XL.yaml
 ```
+
+### 4. Eval Latent Diffusion Transformer
+```bash
+torchrun --nnodes=1 --nproc_per_node=1 sample_ddp_feature_svg.py --cfg-scale 1.0 --sample-dir ./samples --ckpt pretrained/checkpoints/V1-SVG-XL-7000K-256x256.pt
+```
+Then you will get a npy file in samples dir, and 
+```bash
+cd evaluation
+python fid.py <path of npy file>
+```
+Attention: You should put VIRTUAL_imagenet256_labeled.npz in the evalution dir.
+
+### 5. Pretrained Weights
+Pretrained weights can be downloaded here:
+
 
 ---
 

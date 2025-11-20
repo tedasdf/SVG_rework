@@ -17,7 +17,6 @@ from collections import OrderedDict
 from PIL import Image
 from copy import deepcopy
 from glob import glob
-from time import time
 
 from torch.utils.tensorboard import SummaryWriter
 import importlib
@@ -41,7 +40,7 @@ def find_model(model_name, is_train=False):
         checkpoint = checkpoint["model"]
         print("load non-ema ckpt")
 
-        return checkpoint
+    return checkpoint
 
 
 

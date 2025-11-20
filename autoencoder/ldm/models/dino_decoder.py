@@ -122,38 +122,39 @@ class DinoDecoder(pl.LightningModule):
         monitor=None,
         use_vf=None,
         proj_fix=False,
-        is_train=True
+        is_train=True,
+        only_decoder=False,
     ):
         super().__init__()
         self.image_key = image_key
 
-        # Load DINOv3 encoder
-        self.encoder = torch.hub.load(
-            repo_or_dir=dinoconfig['dinov3_location'],
-            model=dinoconfig['model_name'],
-            source="local",
-            weights=dinoconfig['weights'],
-        ).eval()
-
-        # Optionally include extra lightweight ViT
-        self.use_extra_vit = False
-        print("self.use_extra_vit", self.use_extra_vit)
-        self.use_outnorm = False
-
-        if extra_vit_config is not None:
-            self.use_extra_vit = True
-            self.extra_vit = create_small_vit_s(output_dim=extra_vit_config['output_dim'])
-
-            self.mask_ratio = extra_vit_config.get('mask_ratio', 0.0)
-            self.use_outnorm = extra_vit_config.get('use_outnorm', False)
-
-            if self.mask_ratio > 0:
-                self.mask_token = nn.Parameter(torch.zeros(1, extra_vit_config['output_dim'], 1))
-                nn.init.normal_(self.mask_token, std=0.02)
-
-            self.norm_vit = nn.LayerNorm(extra_vit_config['output_dim'] + embed_dim)
-
         self.decoder = Decoder(**ddconfig)
+        if not only_decoder:
+            # Load DINOv3 encoder
+            self.encoder = torch.hub.load(
+                repo_or_dir=dinoconfig['dinov3_location'],
+                model=dinoconfig['model_name'],
+                source="local",
+                weights=dinoconfig['weights'],
+            ).eval()
+
+            # Optionally include extra lightweight ViT
+            self.use_extra_vit = False
+            print("self.use_extra_vit", self.use_extra_vit)
+            self.use_outnorm = False
+
+            if extra_vit_config is not None:
+                self.use_extra_vit = True
+                self.extra_vit = create_small_vit_s(output_dim=extra_vit_config['output_dim'])
+
+                self.mask_ratio = extra_vit_config.get('mask_ratio', 0.0)
+                self.use_outnorm = extra_vit_config.get('use_outnorm', False)
+
+                if self.mask_ratio > 0:
+                    self.mask_token = nn.Parameter(torch.zeros(1, extra_vit_config['output_dim'], 1))
+                    nn.init.normal_(self.mask_token, std=0.02)
+
+                self.norm_vit = nn.LayerNorm(extra_vit_config['output_dim'] + embed_dim)
         
         if is_train:
             self.loss = instantiate_from_config(lossconfig)
@@ -164,11 +165,12 @@ class DinoDecoder(pl.LightningModule):
                 self.register_buffer("colorize", torch.randn(3, colorize_nlabels, 1, 1))
             if monitor is not None:
                 self.monitor = monitor
-            if ckpt_path is not None:
-                self.init_from_ckpt(ckpt_path, ignore_keys=ignore_keys)
 
             self.automatic_optimization = False
             self.proj_fix = proj_fix
+
+        if ckpt_path is not None:
+            self.init_from_ckpt(ckpt_path, ignore_keys=ignore_keys)
 
     def init_from_ckpt(self, path, ignore_keys=list()):
         """Load checkpoint with optional key filtering."""

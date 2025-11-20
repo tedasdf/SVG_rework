@@ -135,7 +135,6 @@ class RectifiedFlow(torch.nn.Module):
             cfg_mode (str): CFG strategy ('constant', 'interval', 'late', 'linear', etc.).
             cfg_interval (int): Step interval used when cfg_mode='interval'.
         """
-        print(f"Using {mode} sampler (cfg_mode={cfg_mode})")
         b = z.size(0)
         device = z.device
         cfg_ori = cfg
@@ -182,7 +181,6 @@ class RectifiedFlow(torch.nn.Module):
                     vc = -vu * ratio
                 else:
                     vc = (1 - cur_cfg) * vu + cur_cfg * vc
-                
                 return vc
             else:
                 raise ValueError(f"Unknown cfg_mode: {cfg_mode}")

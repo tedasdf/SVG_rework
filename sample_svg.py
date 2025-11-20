@@ -11,10 +11,11 @@ from PIL import Image
 from IPython.display import display
 from omegaconf import OmegaConf
 
-from diffusion.rectified_flow_ori_ablation_guidance import RectifiedFlow
+from rectified_flow.rectified_flow import RectifiedFlow
 from utils import instantiate_from_config
 from utils import find_model
 from ldm.models.dino_decoder import DinoDecoder
+
 
 # -------------------------
 # Global setup
@@ -37,12 +38,12 @@ def get_config(ckpt_path):
 
 
 # === User-defined path ===
-ckpt_path = ""  # TODO: fill with checkpoint path
-
+ckpt_path = "pretrained/checkpoints/V1-SVG-XL-7000K-256x256.pt"  # TODO: fill with checkpoint path
 assert ckpt_path and os.path.exists(ckpt_path), "Please set a valid ckpt_path"
 exp_name, config = get_config(ckpt_path)
 step = os.path.splitext(os.path.basename(ckpt_path))[0]
 print(f"Experiment: {exp_name}")
+
 
 # -------------------------
 # 2. Load main model & decoder
@@ -55,15 +56,7 @@ model = model.to(device).eval()
 
 # Load DinoDecoder from encoder config
 encoder_config = OmegaConf.load(config.basic.encoder_config)
-dinov3 = DinoDecoder(
-    ddconfig=encoder_config.model.params.ddconfig,
-    dinoconfig=encoder_config.model.params.dinoconfig,
-    lossconfig=encoder_config.model.params.lossconfig,
-    embed_dim=encoder_config.model.params.embed_dim,
-    ckpt_path=encoder_config.ckpt_path,
-    extra_vit_config=encoder_config.model.params.extra_vit_config,
-).to(device).eval()
-
+dinov3 = instantiate_from_config(encoder_config.model).cuda().eval()
 z_channels = encoder_config.model.params.ddconfig.z_channels
 
 
@@ -79,7 +72,7 @@ image_size = 256
 samples_per_row = 4
 
 # Example class labels (ImageNet indices)
-class_labels = [130, 270, 284, 688, 250, 146, 980, 484, 207, 360, 387, 974, 88, 979, 417, 279]
+class_labels = [15, 270, 284, 688, 250, 146, 980, 484, 207, 20, 387, 974, 88, 979, 417, 279]
 n = len(class_labels)
 
 # Initialize latent z
@@ -113,7 +106,7 @@ samples = diffusion.sample(
     mode=mode,
     timestep_shift=timestep_shift,
     cfg_mode=cfg_mode,
-)[-1]
+)
 
 # Apply feature normalization if needed
 if config.basic.get("feature_norm", False):
@@ -129,6 +122,7 @@ samples_latent = samples.permute(0, 2, 1).reshape(B, D, image_size // 16, image_
 # -------------------------
 with torch.no_grad():
     decoded_full = dinov3.decode(samples_latent)
+print(decoded_full.shape)
 
 decoded_full = torch.clamp(decoded_full, -1, 1)
 
