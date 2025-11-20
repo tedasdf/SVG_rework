@@ -7,7 +7,7 @@
 <div align="center">
 <img src="figs/logo.svg" width="35%"/>
 
-### [<a href="https://arxiv.org/abs/2510.15301" target="_blank">arXiv</a>] | [<a href="https://howlin-wang.github.io/svg/" target="_blank">Project Page</a>]
+### [<a href="https://arxiv.org/abs/2510.15301" target="_blank">arXiv</a>] | [<a href="https://howlin-wang.github.io/svg/" target="_blank">Project Page</a>] ｜ [<a href="https://huggingface.co/howlin/SVG/" target="_blank">Model Weights</a>]
 
 ***[Minglei Shi<sup>1*</sup>](https://github.com/shiml20), [Haolin Wang<sup>1*</sup>](https://howlin-wang.github.io), [Wenzhao Zheng<sup>1†</sup>](https://wzzheng.net), [Ziyang Yuan<sup>2</sup>](https://scholar.google.ru/citations?user=fWxWEzsAAAAJ&hl=en), [Xiaoshi Wu<sup>2</sup>](https://scholar.google.com/citations?user=cnOAMbUAAAAJ&hl=en), [Xintao Wang<sup>2</sup>](https://xinntao.github.io), [Pengfei Wan<sup>2</sup>](https://scholar.google.com/citations?user=P6MraaYAAAAJ&hl=en), [Jie Zhou<sup>1</sup>](https://scholar.google.com/citations?user=6a79aPwAAAAJ&hl=en), [Jiwen Lu<sup>1</sup>](https://ivg.au.tsinghua.edu.cn/Jiwen_Lu/)***  
 <small>(*equal contribution, listed in alphabetical order; †project lead)</small>  
@@ -53,6 +53,9 @@ conda activate svg
 pip install -r requirements.txt
 ```
 
+### 3. Download Pretrained Weights
+Pretrained models are available on [HuggingFace](https://huggingface.co/howlin/SVG).
+
 ---
 
 ## 📦 Data Preparation
@@ -66,8 +69,6 @@ Follow the official DINOv3 repository instructions to download pre-trained check
 ### 2. Prepare Dataset
 - Download **ImageNet-1k**
 - Update dataset paths in the configuration files
-
-
 
 ---
 
@@ -129,11 +130,6 @@ cd evaluation
 python fid.py <path of npy file>
 ```
 Attention: You should put VIRTUAL_imagenet256_labeled.npz in the evalution dir.
-
-### 5. Pretrained Weights
-Pretrained weights can be downloaded here:
-
-
 ---
 
 ## 🎨 Image Generation
