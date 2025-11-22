@@ -29,9 +29,9 @@ model:
       - 16
       dropout: 0.0
     dinoconfig:
-      dinov3_location: /your_dinov3_location
+      dinov3_location: ..\external_modules\dinov3
       model_name: dinov3_vits16plus
-      weights: /your_path/dinov3/dinov3_vits16plus_pretrain_lvd1689m-4057cbaa.pth
+      weights: ..\weight\dinov3\dinov3_vits16plus_pretrain_lvd1689m-4057cbaa.pth
     extra_vit_config:
       output_dim: 8
       mask_ratio: 0.1

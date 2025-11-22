@@ -196,6 +196,9 @@ class ImageNetTrain(ImageNetBase):
                 f.write("\n".join(filelist) + "\n")
         # 标记为已准备，避免重复处理
         tdu.mark_prepared(self.root)
+
+
+        
 class ImageNetValidation(ImageNetBase):
     NAME = "ILSVRC2012_validation"
     URL = "http://www.image-net.org/challenges/LSVRC/2012/"
